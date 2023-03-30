@@ -11,11 +11,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 16
       - run: npm ci
-      - run: vercel deploy --prod
+      - run: npm run build
+      - uses: amondnet/vercel-action@v21
+        with:
+          args: deploy --prod
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
 
   test:
     if: startsWith(github.ref, 'refs/heads/feature/')
