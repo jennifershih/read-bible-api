@@ -15,9 +15,8 @@ jobs:
       - run: npm run build
       - uses: amondnet/vercel-action@v20
         with:
-          args: deploy --prod
-        env:
-          zeit-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          github-token: ${{ secrets.TOKEN }}
 
   test:
     if: startsWith(github.ref, 'refs/heads/feature/')
