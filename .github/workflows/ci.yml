@@ -13,10 +13,9 @@ jobs:
       - uses: actions/checkout@v3
       - run: npm ci
       - run: npm run build
-      - uses: amondnet/vercel-action@v20
-        with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          github-token: ${{ secrets.TOKEN }}
+      - run: npx vercel --token ${VERCEL_TOKEN} --prod
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
 
   test:
     if: startsWith(github.ref, 'refs/heads/feature/')
