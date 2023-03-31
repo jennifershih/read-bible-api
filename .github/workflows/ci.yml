@@ -1,29 +1,19 @@
 name: ci
-on:
-  push:
-    branches:
-      - main
-      - 'feature/**'
+
+on: push
 
 jobs:
-  build-and-deploy:
-    if: github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - run: npm ci
-      - run: npm run build
-      - run: npx vercel --token ${VERCEL_TOKEN} --prod
-        env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-
-  test:
-    if: startsWith(github.ref, 'refs/heads/feature/')
-    runs-on: ubuntu-latest
+  ci:
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
           node-version: 16
       - run: npm ci
+      - run: npm run build
       - run: npm run test:ci
+      - run: npx vercel --token ${VERCEL_TOKEN} --prod --yes
+        if: github.ref == 'refs/heads/main'
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
