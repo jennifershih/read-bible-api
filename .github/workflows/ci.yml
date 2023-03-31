@@ -17,7 +17,7 @@ jobs:
         with:
           args: deploy --prod
         env:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          zeit-token: ${{ secrets.VERCEL_TOKEN }}
 
   test:
     if: startsWith(github.ref, 'refs/heads/feature/')
