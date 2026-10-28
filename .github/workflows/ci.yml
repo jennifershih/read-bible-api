@@ -1,15 +1,21 @@
 name: ci
 
-on: push
+on:
+  push:
+    branches: [main]
+  pull_request:
 
 jobs:
   ci:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: 16
+          node-version: 22
+          cache: npm
       - run: npm ci
+      - run: npm run lint
       - run: npm run build
-      - run: npm run test:ci
+      - run: npm test
+      - run: npm run test:e2e

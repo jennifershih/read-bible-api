@@ -1,12 +1,10 @@
 import { Controller, Get } from '@nestjs/common';
-import { AppService } from './app.service';
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
-
+  /** Health check used by uptime monitors and the Vercel deployment. */
   @Get()
-  getHello(): string {
-    return this.appService.getHello();
+  health(): { status: string } {
+    return { status: 'ok' };
   }
 }

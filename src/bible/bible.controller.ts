@@ -1,52 +1,29 @@
-import {
-  Controller,
-  Post,
-  Body,
-  HttpException,
-  HttpStatus,
-} from '@nestjs/common';
-import { BibleVerseGeneratorService } from 'src/bible/bible.service';
-import axios from 'axios';
+import { BadRequestException, Body, Controller, HttpCode, Post } from '@nestjs/common';
+import { BibleTextService } from './bible-text.service';
+import { VerseSuggesterService } from './verse-suggester.service';
+
+const MAX_MOOD_LENGTH = 200;
 
 @Controller('get-bible-verse-from-mood')
 export class BibleController {
   constructor(
-    private readonly bibleVerseGeneratorService: BibleVerseGeneratorService,
+    private readonly suggester: VerseSuggesterService,
+    private readonly bibleText: BibleTextService,
   ) {}
 
   @Post()
-  async getBibleVerseFromMood(@Body() body: { mood: string }) {
-    const prompt = `今天我的心情是 ${body.mood},請依照我的心情提供來自現代標點和合本的聖經資訊,格式是書卷＠章＠節給我。例如genesis：＠3＠16。\n`;
-    const generatedVerse =
-      await this.bibleVerseGeneratorService.generateBibleVerse(prompt);
-
-    const verseMatch = generatedVerse.match(
-      /^(.+?)(?::|：)?[@＠](\d+)[@＠](\d+)(?:-(\d+))?/,
-    );
-
-    if (!verseMatch) {
-      throw new HttpException(
-        'Failed to generate verse.',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+  @HttpCode(200)
+  async getVerseFromMood(@Body() body: { mood?: unknown }): Promise<{ verse: string }> {
+    const mood = typeof body?.mood === 'string' ? body.mood.trim() : '';
+    if (!mood) {
+      throw new BadRequestException('mood is required.');
+    }
+    if (mood.length > MAX_MOOD_LENGTH) {
+      throw new BadRequestException(`mood must be at most ${MAX_MOOD_LENGTH} characters.`);
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const bookNames = require('./bookNames');
-    const chineseBookName = verseMatch[1];
-    const englishBookName = bookNames[chineseBookName];
-    const chapter = parseInt(verseMatch[2]);
-    const verseNum = parseInt(verseMatch[3]);
-    const url = `https://bible-api.com/${englishBookName}+${chapter}:${verseNum}`;
-    try {
-      const response = await axios.get(url);
-      const text = response.data.text;
-      return {
-        verse: `${chineseBookName} ${chapter}:${verseNum} ${text}`,
-      };
-    } catch (error) {
-      console.error(error);
-      return { verse: 'Sorry, something went wrong.' };
-    }
+    const ref = await this.suggester.suggest(mood);
+    const text = await this.bibleText.getText(ref);
+    return { verse: `${ref.book} ${ref.chapter}:${ref.verse} ${text}` };
   }
 }

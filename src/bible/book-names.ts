@@ -1,4 +1,5 @@
-module.exports = {
+/** Traditional Chinese book name (和合本) → English name understood by bible-api.com */
+export const BOOK_NAMES: Readonly<Record<string, string>> = {
   創世記: 'Genesis',
   出埃及記: 'Exodus',
   利未記: 'Leviticus',
@@ -53,6 +54,7 @@ module.exports = {
   帖撒羅尼迦前書: '1 Thessalonians',
   帖撒羅尼迦後書: '2 Thessalonians',
   提摩太前書: '1 Timothy',
+  提摩太後書: '2 Timothy',
   提多書: 'Titus',
   腓利門書: 'Philemon',
   希伯來書: 'Hebrews',
