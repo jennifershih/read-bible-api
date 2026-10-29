@@ -9,7 +9,7 @@ The API behind [Read Bible](https://github.com/jennifershih/read-bible). Describ
 
 1. `POST /get-bible-verse-from-mood` receives `{ "mood": "今天有點焦慮" }`.
 2. OpenAI (chat model in JSON mode) picks a verse and answers with `{ book, chapter, verse }`.
-3. The reference is validated against the 66 books, then the verse text is fetched in the Chinese Union Version from [bible-api.com](https://bible-api.com).
+3. The reference is validated against the 66 books, then the verse text is fetched in the Chinese Union Version from [bible-api.com](https://bible-api.com) (`/data/cuv/{BOOK}/{chapter}`).
 4. The API answers `{ "verse": "腓立比書 4:6 應當一無掛慮…" }`.
 
 Invalid input returns `400`; a missing API key or an upstream failure returns `503` with a clear message.

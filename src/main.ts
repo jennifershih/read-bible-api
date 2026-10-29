@@ -1,7 +1,10 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 
-const DEFAULT_ORIGINS = ['https://jennifershih.github.io', 'http://localhost:4200'];
+const DEFAULT_ORIGINS = [
+  'https://jennifershih.github.io',
+  'http://localhost:4200',
+];
 
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule);

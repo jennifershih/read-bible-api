@@ -7,7 +7,9 @@ describe('read-bible-api (e2e)', () => {
   let app: INestApplication;
 
   beforeAll(async () => {
-    const moduleRef = await Test.createTestingModule({ imports: [AppModule] }).compile();
+    const moduleRef = await Test.createTestingModule({
+      imports: [AppModule],
+    }).compile();
     app = moduleRef.createNestApplication();
     await app.init();
   });
@@ -20,5 +22,8 @@ describe('read-bible-api (e2e)', () => {
     request(app.getHttpServer()).get('/').expect(200).expect({ status: 'ok' }));
 
   it('POST /get-bible-verse-from-mood validates the body', () =>
-    request(app.getHttpServer()).post('/get-bible-verse-from-mood').send({}).expect(400));
+    request(app.getHttpServer())
+      .post('/get-bible-verse-from-mood')
+      .send({})
+      .expect(400));
 });

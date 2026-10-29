@@ -1,25 +1,26 @@
 import { Injectable, ServiceUnavailableException } from '@nestjs/common';
-import { BOOK_NAMES } from './book-names';
+import { BOOK_CODES } from './book-names';
 import { VerseReference } from './verse-reference';
 
-interface BibleApiResponse {
-  text?: string;
+interface ChapterResponse {
+  verses?: { verse: number; text: string }[];
 }
 
 @Injectable()
 export class BibleTextService {
-  /** Fetch the verse text in the Chinese Union Version from bible-api.com. */
+  /** Fetch the verse text in the Chinese Union Version (和合本) from bible-api.com. */
   async getText({ book, chapter, verse }: VerseReference): Promise<string> {
-    const reference = encodeURIComponent(`${BOOK_NAMES[book]} ${chapter}:${verse}`);
-    const res = await fetch(`https://bible-api.com/${reference}?translation=cuv`);
+    const res = await fetch(
+      `https://bible-api.com/data/cuv/${BOOK_CODES[book]}/${chapter}`,
+    );
     if (!res.ok) {
       throw new ServiceUnavailableException('Could not load the verse text.');
     }
 
-    const body = (await res.json()) as BibleApiResponse;
-    const text = body.text?.trim();
+    const body = (await res.json()) as ChapterResponse;
+    const text = body.verses?.find((v) => v.verse === verse)?.text.trim();
     if (!text) {
-      throw new ServiceUnavailableException('The verse text is empty.');
+      throw new ServiceUnavailableException('The verse was not found.');
     }
     return text;
   }

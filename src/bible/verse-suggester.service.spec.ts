@@ -1,11 +1,16 @@
 import { ServiceUnavailableException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { parseVerseReference, VerseSuggesterService } from './verse-suggester.service';
-import { BOOK_NAMES } from './book-names';
+import {
+  parseVerseReference,
+  VerseSuggesterService,
+} from './verse-suggester.service';
+import { BOOK_CODES } from './book-names';
 
 describe('parseVerseReference', () => {
   it('accepts a valid reference', () => {
-    expect(parseVerseReference('{"book":"詩篇","chapter":23,"verse":1}')).toEqual({
+    expect(
+      parseVerseReference('{"book":"詩篇","chapter":23,"verse":1}'),
+    ).toEqual({
       book: '詩篇',
       chapter: 23,
       verse: 1,
@@ -13,7 +18,10 @@ describe('parseVerseReference', () => {
   });
 
   it('accepts numbers sent as strings', () => {
-    expect(parseVerseReference('{"book":"約翰福音","chapter":"3","verse":"16"}').chapter).toBe(3);
+    expect(
+      parseVerseReference('{"book":"約翰福音","chapter":"3","verse":"16"}')
+        .chapter,
+    ).toBe(3);
   });
 
   it.each([
@@ -26,9 +34,9 @@ describe('parseVerseReference', () => {
   });
 });
 
-describe('BOOK_NAMES', () => {
+describe('BOOK_CODES', () => {
   it('covers all 66 books', () => {
-    expect(Object.keys(BOOK_NAMES)).toHaveLength(66);
+    expect(Object.keys(BOOK_CODES)).toHaveLength(66);
   });
 });
 

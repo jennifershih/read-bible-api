@@ -14,10 +14,16 @@ describe('BibleController', () => {
   beforeEach(() => vi.resetAllMocks());
 
   it('combines the suggested reference with the verse text', async () => {
-    suggester.suggest.mockResolvedValue({ book: '詩篇', chapter: 23, verse: 1 });
+    suggester.suggest.mockResolvedValue({
+      book: '詩篇',
+      chapter: 23,
+      verse: 1,
+    });
     bibleText.getText.mockResolvedValue('耶和華是我的牧者');
 
-    await expect(controller.getVerseFromMood({ mood: '  焦慮  ' })).resolves.toEqual({
+    await expect(
+      controller.getVerseFromMood({ mood: '  焦慮  ' }),
+    ).resolves.toEqual({
       verse: '詩篇 23:1 耶和華是我的牧者',
     });
     expect(suggester.suggest).toHaveBeenCalledWith('焦慮');
@@ -26,7 +32,9 @@ describe('BibleController', () => {
   it.each([{}, { mood: '' }, { mood: 42 }, { mood: 'x'.repeat(201) }])(
     'rejects invalid input %j',
     async (body) => {
-      await expect(controller.getVerseFromMood(body)).rejects.toThrow(BadRequestException);
+      await expect(controller.getVerseFromMood(body)).rejects.toThrow(
+        BadRequestException,
+      );
       expect(suggester.suggest).not.toHaveBeenCalled();
     },
   );

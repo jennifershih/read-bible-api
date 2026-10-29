@@ -1,7 +1,7 @@
 import { Injectable, ServiceUnavailableException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import OpenAI from 'openai';
-import { BOOK_NAMES } from './book-names';
+import { BOOK_CODES } from './book-names';
 import { VerseReference } from './verse-reference';
 
 const SYSTEM_PROMPT = `你是一位溫柔的牧者。使用者會描述今天的心情，請從和合本聖經中挑選一節最能安慰或鼓勵他的經文。
@@ -21,7 +21,9 @@ export class VerseSuggesterService {
   /** Ask the model for a verse that fits the mood. */
   async suggest(mood: string): Promise<VerseReference> {
     if (!this.client) {
-      throw new ServiceUnavailableException('OPENAI_API_KEY is not configured.');
+      throw new ServiceUnavailableException(
+        'OPENAI_API_KEY is not configured.',
+      );
     }
 
     const completion = await this.client.chat.completions.create({
@@ -52,13 +54,15 @@ export function parseVerseReference(raw: string): VerseReference {
   const verseNum = Number(verse);
   if (
     typeof book !== 'string' ||
-    !(book in BOOK_NAMES) ||
+    !(book in BOOK_CODES) ||
     !Number.isInteger(chapterNum) ||
     !Number.isInteger(verseNum) ||
     chapterNum < 1 ||
     verseNum < 1
   ) {
-    throw new ServiceUnavailableException('The model returned an invalid verse.');
+    throw new ServiceUnavailableException(
+      'The model returned an invalid verse.',
+    );
   }
 
   return { book, chapter: chapterNum, verse: verseNum };
